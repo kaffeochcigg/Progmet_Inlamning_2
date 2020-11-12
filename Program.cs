@@ -9,33 +9,52 @@ namespace Inlamning_2_ra_kod
 {
     class Person
     {
-        public string namn, adress, telefon, email;
+        public string name, address, phone, email;
+
         public Person(string N, string A, string T, string E)
         {
-            namn = N; adress = A; telefon = T; email = E;
+            name = N; address = A; phone = T; email = E;
+        }
+        public Person()
+        {
+            Console.WriteLine("Lägger till ny person");
+            Console.Write("  1. ange namn:    ");
+            name = Console.ReadLine();
+            Console.Write("  2. ange adress:  ");
+            address = Console.ReadLine();
+            Console.Write("  3. ange telefon: ");
+            phone = Console.ReadLine();
+            Console.Write("  4. ange email:   ");
+            email = Console.ReadLine();
+        }
+        public void Print()
+        {
+            Console.WriteLine("{0}, {1}, {2}, {3}", name, address, phone, email);
+        }
+        public void ModifyInfo(string toBeChanged, string newValue)
+        {
+            switch (toBeChanged)
+            {
+                case "namn":
+                    name = newValue;
+                    break;
+                case "adress":
+                    address = newValue;
+                    break;
+                case "telefon":
+                    phone = newValue;
+                    break;
+                case "email":
+                    email = newValue;
+                    break;
+            }
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            List<Person> Dict = new List<Person>();
-
-            Console.Write("Laddar adresslistan ... ");
-            using (StreamReader fileStream = new StreamReader(@"..\..\address.lis"))
-            {
-                while (fileStream.Peek() >= 0)
-                {
-                    string line = fileStream.ReadLine();
-                    // Console.WriteLine(line);
-                    string[] word = line.Split('#');
-                    // Console.WriteLine("{0}, {1}, {2}, {3}", word[0], word[1], word[2], word[3]);
-                    Person P = new Person(word[0], word[1], word[2], word[3]);
-                    Dict.Add(P);
-                }
-            }
-            Console.WriteLine("klart!");
-
+            List<Person> Dict = ReadFile();
             Console.WriteLine("Hej och välkommen till adresslistan");
             Console.WriteLine("Skriv 'sluta' för att sluta!");
             string command;
@@ -49,77 +68,100 @@ namespace Inlamning_2_ra_kod
                 }
                 else if (command == "ny")
                 {
-                    Console.WriteLine("Lägger till ny person");
-                    Console.Write("  1. ange namn:    ");
-                    string name = Console.ReadLine();
-                    Console.Write("  2. ange adress:  ");
-                    string adress = Console.ReadLine();
-                    Console.Write("  3. ange telefon: ");
-                    string telefon = Console.ReadLine();
-                    Console.Write("  4. ange email:   ");
-                    string email = Console.ReadLine();
-                    Dict.Add(new Person(name, adress, telefon, email));
+                    Dict.Add(new Person());
                 }
                 else if (command == "ta bort")
                 {
-                    Console.Write("Vem vill du ta bort (ange namn): ");
-                    string villTaBort = Console.ReadLine();
-                    int found = -1;
-                    for (int i = 0; i < Dict.Count(); i++)
-                    {
-                        if (Dict[i].namn == villTaBort) found = i;
-                    }
-                    if (found == -1)
-                    {
-                        Console.WriteLine("Tyvärr: {0} fanns inte i telefonlistan", villTaBort);
-                    }
-                    else
-                    {
-                        Dict.RemoveAt(found);
-                    }
+                    RemovePerson(Dict);
                 }
                 else if (command == "visa")
                 {
                     for (int i = 0; i < Dict.Count(); i++)
                     {
-                        Person P = Dict[i];
-                        Console.WriteLine("{0}, {1}, {2}, {3}", P.namn, P.adress, P.telefon, P.email);
+                        Dict[i].Print();
                     }
                 }
                 else if (command == "ändra")
                 {
-                    Console.Write("Vem vill du ändra (ange namn): ");
-                    string villÄndra = Console.ReadLine();
-                    int found = -1;
-                    for (int i = 0; i < Dict.Count(); i++)
-                    {
-                        if (Dict[i].namn == villÄndra) found = i;
-                    }
-                    if (found == -1)
-                    {
-                        Console.WriteLine("Tyvärr: {0} fanns inte i telefonlistan", villÄndra);
-                    }
-                    else
-                    {
-                        Console.Write("Vad vill du ändra (namn, adress, telefon eller email): ");
-                        string fältAttÄndra = Console.ReadLine();
-                        Console.Write("Vad vill du ändra {0} på {1} till: ", fältAttÄndra, villÄndra);
-                        string nyttVärde = Console.ReadLine();
-                        switch (fältAttÄndra)
-                        {
-                            case "namn": Dict[found].namn = nyttVärde; break;
-                            case "adress": Dict[found].adress = nyttVärde; break;
-                            case "telefon": Dict[found].telefon = nyttVärde; break;
-                            case "email": Dict[found].email = nyttVärde; break;
-                            default: break;
-                        }
-                    }
+                    ModifyPerson(Dict);
                 }
                 else
                 {
                     Console.WriteLine("Okänt kommando: {0}", command);
                 }
             } while (command != "sluta");
+        }
+        /* METHOD: RemovePerson (static)
+        * PURPOSE: Deletes an existing contact
+        * PARAMETERS: Dict stores all contacts
+        * RETURN VALUE: Returns the index of selected person to delete
+        */
+        private static void RemovePerson(List<Person> Dict)
+        {
+            Console.Write("Vem vill du ta bort (ange namn): ");
+            string removeName = Console.ReadLine();
+            int found = -1;
+            for (int i = 0; i < Dict.Count(); i++)
+            {
+                if (Dict[i].name == removeName) found = i;
+            }
+            if (found == -1)
+            {
+                Console.WriteLine("Tyvärr: {0} fanns inte i telefonlistan", removeName);
+            }
+            else
+            {
+                Dict.RemoveAt(found);
+            }
+        }
+        /* METHOD: ReadFile (static)
+        *  PURPOSE: To read contacts from file         
+        *  RETURN VALUE: Contacts from file
+        */
+        static List<Person> ReadFile()
+        {
+            List<Person> Dict = new List<Person>();
+            Console.Write("Laddar adresslistan ... ");
+            using (StreamReader fileStream = new StreamReader(@"..\..\address.lis"))
+            {
+                while (fileStream.Peek() >= 0)
+                {
+                    string line = fileStream.ReadLine();
+                    string[] word = line.Split('#');
+                    Person P = new Person(word[0], word[1], word[2], word[3]);
+                    Dict.Add(P);
+                }
+            }
+            Console.WriteLine("klart!");
+            return Dict;
+        }
+        /* METHOD: ModifyPerson (static)
+        * PURPOSE: To alter info on a specific contact
+        * PARAMETERS: Dict stores all contacts
+        * RETURN VALUE: Returns input to the Object Person
+        */
+        static List<Person> ModifyPerson(List<Person> Dict)
+        {
+            Console.Write("Vem vill du ändra (ange namn): ");
+            string changeInfo = Console.ReadLine();
+            int found = -1;
+            for (int i = 0; i < Dict.Count(); i++)
+            {
+                if (Dict[i].name == changeInfo) found = i;
+            }
+            if (found == -1)
+            {
+                Console.WriteLine("Tyvärr: {0} fanns inte i telefonlistan", changeInfo);
+            }
+            else
+            {
+                Console.Write("Vad vill du ändra (namn, adress, telefon eller email): ");
+                string toBeChanged = Console.ReadLine();
+                Console.Write("Vad vill du ändra {0} på {1} till: ", toBeChanged, changeInfo);
+                string newValue = Console.ReadLine();
+                Dict[found].ModifyInfo(toBeChanged, newValue);
+            }
+            return Dict;
         }
     }
 }
