@@ -7,14 +7,23 @@ using System.Threading.Tasks;
 
 namespace Inlamning_2_ra_kod
 {
+    /* CLASS: Person
+     * PURPOSE: Enables for use in methods to access the contact list.
+     */
     class Person
     {
         public string name, address, phone, email;
-
+        /* Constructor: Person
+         * Purpose: Creates the object: Person
+         * Parameters: sets 'N' = 'name', sets 'A' = 'address', sets 'T' = 'phone', sets 'E' = 'email'
+         */
         public Person(string N, string A, string T, string E)
         {
             name = N; address = A; phone = T; email = E;
         }
+        /* Constructor: Person
+         * Purpose: Asking for user input when creating new object from the class Person    
+         */
         public Person()
         {
             Console.WriteLine("Lägger till ny person");
@@ -27,10 +36,18 @@ namespace Inlamning_2_ra_kod
             Console.Write("  4. ange email:   ");
             email = Console.ReadLine();
         }
+        /* Method: Print
+         * Purpose: To read the contacts when it's being used in PrintList-method
+         */
         public void Print()
         {
             Console.WriteLine("{0}, {1}, {2}, {3}", name, address, phone, email);
         }
+        /* Method: ModifyInfo
+         * Purpose: To modify the current contacts
+         * Parameters: 'toBeChanged' is the feild we want to change, 'newValue' the new value input
+         * Return value: Sends back input to the object 'Person'
+         */
         public void ModifyInfo(string toBeChanged, string newValue)
         {
             switch (toBeChanged)
@@ -76,10 +93,7 @@ namespace Inlamning_2_ra_kod
                 }
                 else if (command == "visa")
                 {
-                    for (int i = 0; i < Dict.Count(); i++)
-                    {
-                        Dict[i].Print();
-                    }
+                    PrinList(Dict);
                 }
                 else if (command == "ändra")
                 {
@@ -91,11 +105,24 @@ namespace Inlamning_2_ra_kod
                 }
             } while (command != "sluta");
         }
+        /* METHOD: PrintList (static)
+         * PURPOSE: to loop and print the existing contact
+         * PARAMETERS: Dict stores all Person objects in a list
+         * RETURN VALUE: Reads all contacts
+         */
+        private static void PrinList(List<Person> Dict)
+        {
+            for (int i = 0; i < Dict.Count(); i++)
+            {
+                Person P = Dict[i];
+                P.Print();
+            }
+        }
         /* METHOD: RemovePerson (static)
-        * PURPOSE: Deletes an existing contact
-        * PARAMETERS: Dict stores all contacts
-        * RETURN VALUE: Returns the index of selected person to delete
-        */
+         * PURPOSE: Deletes an existing contact
+         * PARAMETERS: Dict stores all Person objects in a list
+         * RETURN VALUE: Returns the index of selected person to delete
+         */
         private static void RemovePerson(List<Person> Dict)
         {
             Console.Write("Vem vill du ta bort (ange namn): ");
@@ -115,9 +142,9 @@ namespace Inlamning_2_ra_kod
             }
         }
         /* METHOD: ReadFile (static)
-        *  PURPOSE: To read contacts from file         
-        *  RETURN VALUE: Contacts from file
-        */
+         * PURPOSE: To read contacts, split at '#' and store the person object in Dict list    
+         * RETURN VALUE: Contacts from file
+         */
         static List<Person> ReadFile()
         {
             List<Person> Dict = new List<Person>();
@@ -136,10 +163,10 @@ namespace Inlamning_2_ra_kod
             return Dict;
         }
         /* METHOD: ModifyPerson (static)
-        * PURPOSE: To alter info on a specific contact
-        * PARAMETERS: Dict stores all contacts
-        * RETURN VALUE: Returns input to the Object Person
-        */
+         * PURPOSE: To alter info on a specific contact
+         * PARAMETERS: Dict stores all Person objects in a list
+         * RETURN VALUE: Returns input to the Object Person
+         */
         static List<Person> ModifyPerson(List<Person> Dict)
         {
             Console.Write("Vem vill du ändra (ange namn): ");
